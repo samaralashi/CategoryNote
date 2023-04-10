@@ -33,7 +33,7 @@ public class MainActivity2 extends AppCompatActivity implements MyAdapter2.ItemC
     MyAdapter2 myAdapter;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     CollectionReference mNotesRef = db.collection("Note");
-    private FirebaseAnalytics mFirebaseAnalytics;
+    private final FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);;
     LinearLayoutManager layoutManager = new LinearLayoutManager(this);
     Calendar calendar = Calendar.getInstance();
     int hour = calendar.get(Calendar.HOUR);
@@ -51,7 +51,6 @@ public class MainActivity2 extends AppCompatActivity implements MyAdapter2.ItemC
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-//        db = FirebaseFirestore.getInstance();
         noteItemArrayList = new ArrayList<Note>();
         myAdapter = new MyAdapter2(MainActivity2.this, noteItemArrayList, this, this);
 
@@ -60,8 +59,9 @@ public class MainActivity2 extends AppCompatActivity implements MyAdapter2.ItemC
 //        String categoryId = getIntent().getStringExtra("categoryId");
 
 //        mNotesRef = db.collection("Categories").document(categoryId).collection("note");
-//        screenTrack("MainActivity2");
+        screenTrack("MainActivity2");
         GetAllNotes();
+
 
 
 
@@ -130,12 +130,12 @@ public class MainActivity2 extends AppCompatActivity implements MyAdapter2.ItemC
         bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, content);
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
-//    public void screenTrack(String screenName){
-//        Bundle bundle = new Bundle();
-//        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, screenName);
-//        bundle.putString(FirebaseAnalytics.Param.SCREEN_CLASS, "Main Activity");
-//        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-//    }
+    public void screenTrack(String screenName){
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, screenName);
+        bundle.putString(FirebaseAnalytics.Param.SCREEN_CLASS, "Main Activity");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+    }
 
     @Override
     protected void onPause() {

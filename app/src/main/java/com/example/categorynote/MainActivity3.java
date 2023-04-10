@@ -30,12 +30,12 @@ import java.util.HashMap;
 
 public class MainActivity3 extends AppCompatActivity {
 
-    FirebaseFirestore db;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();;
     private FirebaseAnalytics mFirebaseAnalytics;
     TextView noteNameText;
     TextView noteDescText;
     ArrayList<Note> items;
-    ImageView imageView;
+    ImageView noteImage;
     Calendar calendar = Calendar.getInstance();
     int hour = calendar.get(Calendar.HOUR);
     int min = calendar.get(Calendar.MINUTE);
@@ -46,9 +46,13 @@ public class MainActivity3 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main3);
 
-        imageView = findViewById(R.id.imageView);
+        noteImage = findViewById(R.id.imageView);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        db = FirebaseFirestore.getInstance();
+
+        GetAllNotes();
+        screenTrack("MainActivity3");
+
+
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageReference = storage.getReference().child("pizza.jpg");
@@ -56,18 +60,22 @@ public class MainActivity3 extends AppCompatActivity {
             @Override
             public void onSuccess(Uri uri) {
                 Log.d("tag", "SUCCESS");
-                Glide.with(getBaseContext()).load(uri.toString()).into(imageView);
+                Glide.with(getBaseContext()).load(uri.toString()).into(noteImage);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("tag", "error");
             }
         });
-
-
 
 
     }
 
     private void GetAllNotes() {
 
-        db.collection("Note").document(getIntent().getStringExtra("id")).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        db.collection("Note").document(getIntent().getStringExtra("id")).get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if(task.isSuccessful()){
@@ -96,13 +104,13 @@ public class MainActivity3 extends AppCompatActivity {
                 });
     }
 
-    public void categoryEvent(String id, String name, String content){
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, id);
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, name);
-        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, content);
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-    }
+//    public void categoryEvent(String id, String name, String content){
+//        Bundle bundle = new Bundle();
+//        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, id);
+//        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, name);
+//        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, content);
+//        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+//    }
     public void screenTrack(String screenName){
         Bundle bundle = new Bundle();
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, screenName);
