@@ -81,12 +81,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
 
     }
-    public interface ItemClickListener {
-        void onItemClick(int position, String id);
-
+    public Category getItem(int id) {
+        return categoryArrayList.get(id);
     }
 
-    public interface ItemClickListener2 {
+    void setClickListener(ItemClickListener itemClickListener) {
+        this.mClickListener = itemClickListener;
+    }
+
+    public interface ItemClickListener {
+        void onItemClick(int position, String id);
+    }
+
+    public interface ItemClickListener2{
         void onItemClick2(int position, String id);
     }
 }

@@ -5,8 +5,46 @@ public class Note {
     String noteName;
     String desc;
     String categoryId;
+    String image;
 
-    public Note(String noteId, String noteName) {}
+    public Note() {
+    }
+
+//    public Note(String noteId, String noteName, String desc, String categoryId) {
+//        this.noteId = noteId;
+//        this.noteName = noteName;
+//        this.desc = desc;
+//        this.categoryId = categoryId;
+//    }
+
+//    public Note(String noteId, String noteName, String desc) {
+//        this.noteId = noteId;
+//        this.noteName = noteName;
+//        this.desc = desc;
+//    }
+
+
+    public Note(String noteId, String noteName, String desc, String categoryId, String image) {
+        this.noteId = noteId;
+        this.noteName = noteName;
+        this.desc = desc;
+        this.categoryId = categoryId;
+        this.image = image;
+    }
+
+
+    public Note(String noteId, String noteName) {
+        this.noteId = noteId;
+        this.noteName = noteName;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
 
     public String getNoteId() {
         return noteId;

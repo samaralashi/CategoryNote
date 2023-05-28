@@ -37,14 +37,15 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity implements MyAdapter.ItemClickListener, MyAdapter.ItemClickListener2 {
 
     RecyclerView recyclerView;
+    RecyclerView categoryList;
     ArrayList<Category> categoryArrayList;
     MyAdapter myAdapter;
     FirebaseFirestore db;
-
+    private long startTime;
     private FirebaseAnalytics mFirebaseAnalytics;
     LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-    private MyAdapter.ItemClickListener mClickListener;
-    private MyAdapter.ItemClickListener2 itemClickListener2;
+//    private MyAdapter.ItemClickListener mClickListener;
+//    private MyAdapter.ItemClickListener2 itemClickListener2;
 
     Calendar calendar = Calendar.getInstance();
     int hour = calendar.get(Calendar.HOUR);
@@ -56,20 +57,36 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ItemCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        recyclerView = findViewById(R.id.rvCategoryNoteList);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+//
+//        recyclerView = findViewById(R.id.rvCategoryNoteList);
+//        recyclerView.setHasFixedSize(true);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+//
+//        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+//
+//        db = FirebaseFirestore.getInstance();
+//        categoryArrayList = new ArrayList<Category>();
+//        myAdapter = new MyAdapter(this, categoryArrayList, this,  this);
+//
+//        recyclerView.setAdapter(myAdapter);
+//        GetAllNotes();
+//        screenTrack("MainActivity");
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         db = FirebaseFirestore.getInstance();
-        categoryArrayList = new ArrayList<Category>();
-        myAdapter = new MyAdapter((Context) this, categoryArrayList, this,  this);
+        startTime = System.currentTimeMillis();
 
-        recyclerView.setAdapter(myAdapter);
+        categoryList = findViewById(R.id.rvCategoryNoteList);
+        categoryList.setLayoutManager(new LinearLayoutManager(this));
+
+        recyclerView = findViewById(R.id.rvCategoryNoteList);
+        categoryArrayList = new ArrayList<Category>();
+        myAdapter = new MyAdapter(this, categoryArrayList, this, this);
         GetAllNotes();
         screenTrack("MainActivity");
+
+
     }
 
     private void GetAllNotes() {
@@ -115,12 +132,14 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ItemCli
 
     @Override
     public void onItemClick2(int position, String id) {
-        Category click = categoryArrayList.get(position);
-        String idCategory = click.getId();
+        Category clickedItem = categoryArrayList.get(position);
+        String idc = clickedItem.getId();
         Intent intent = new Intent(this, MainActivity2.class);
-        intent.putExtra("idc", idCategory);
-        categoryEvent(idCategory, "Category Button", categoryArrayList.get(position).categoryName);
+        intent.putExtra("id", idc);
+        Log.e("samar", idc);
+        categoryEvent(idc, "Category Button", categoryArrayList.get(position).categoryName);
         startActivity(intent);
+
     }
 
     public void categoryEvent(String id, String name, String content){
@@ -153,6 +172,8 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ItemCli
         users.put("hours", h);
         users.put("minutes", m);
         users.put("seconds", s);
+        users.put("screen Name", "MainActivity");
+
 
         db.collection("users")
                 .add(users)
@@ -171,10 +192,3 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ItemCli
         super.onPause();
     }
 }
-
-
-//    public void onCategorySelected(DocumentSnapshot category){
-//        Intent intent = new Intent(this, MainActivity2.class);
-//        intent.putExtra(MainActivity2.KEY_CATEGORY_ID, category.getId());
-//        startActivity(intent);
-//    }

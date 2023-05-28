@@ -6,7 +6,7 @@ public class Category {
     String categoryId;
 
 
-//    public Category(){}
+    public Category(){}
 
     public Category(String categoryId,String categoryName) {
         this.categoryName = categoryName;
@@ -16,10 +16,6 @@ public class Category {
     public String getCategoryName() {
         return categoryName;
     }
-
-//    public void setCategoryName(String categoryName) {
-//        this.categoryName = categoryName;
-//    }
 
     public String getId() {
         return categoryId;

@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,6 +36,7 @@ public class MainActivity3 extends AppCompatActivity {
     TextView noteNameText;
     TextView noteDescText;
     ArrayList<Note> items;
+    Context context;
     ImageView noteImage;
     Calendar calendar = Calendar.getInstance();
     int hour = calendar.get(Calendar.HOUR);
@@ -84,14 +86,19 @@ public class MainActivity3 extends AppCompatActivity {
 
                             if (documentSnapshot.exists()){
                                 String noteName = documentSnapshot.getString("noteName");
-                                String noteDesc = documentSnapshot.getString("desc");
+                                String noteDesc = documentSnapshot.getString("description");
+//                                String image = documentSnapshot.getString("image");
+                                String imageUrl = documentSnapshot.getString("image");
 
+                                ImageView imageView = findViewById(R.id.imageView);
                                 noteNameText = findViewById(R.id.textView);
                                 noteDescText = findViewById(R.id.textView2);
 
                                 noteNameText.setText(noteName);
                                 noteDescText.setText(noteDesc);
+                                Glide.with(MainActivity3.this).load(imageUrl).into(noteImage);
 
+//                                Glide.with(context).load(image).into(imageView);
                             }
                             else {
                                 Log.e("tag", "error");
@@ -134,6 +141,7 @@ public class MainActivity3 extends AppCompatActivity {
         users.put("hours", h);
         users.put("minutes", m);
         users.put("seconds", s);
+        users.put("screen Name", "MainActivity3");
 
         db.collection("users")
                 .add(users)

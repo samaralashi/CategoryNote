@@ -6,8 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +23,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 
 public class MainActivity2 extends AppCompatActivity implements MyAdapter2.ItemClickListener, MyAdapter2.ItemClickListener2 {
 
@@ -40,42 +39,26 @@ public class MainActivity2 extends AppCompatActivity implements MyAdapter2.ItemC
     int min = calendar.get(Calendar.MINUTE);
     int sec = calendar.get(Calendar.SECOND);
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
 
         recyclerView = findViewById(R.id.rvCategoryItemList);
-        recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        noteItemArrayList = new ArrayList<Note>();
-        myAdapter = new MyAdapter2(MainActivity2.this, noteItemArrayList, this, this);
-
+        noteItemArrayList = new ArrayList<>();
+        myAdapter = new MyAdapter2(this, noteItemArrayList, this, this);
         recyclerView.setAdapter(myAdapter);
 
-//        String categoryId = getIntent().getStringExtra("categoryId");
-
-//        mNotesRef = db.collection("Categories").document(categoryId).collection("note");
-        screenTrack("MainActivity2");
         GetAllNotes();
-
-
-
-
+        screenTrack("MainActivity2");
     }
 
     private void GetAllNotes() {
-
-        Query query = mNotesRef.whereEqualTo("categoryId", getIntent().getStringExtra("idc"));
-        Log.e("tag", getIntent().getStringExtra("idc"));
+        Query query = mNotesRef.whereEqualTo("categoryId", getIntent().getStringExtra("id"));
+        Log.e("tag", getIntent().getStringExtra("id"));
         query.get()
-
-
-        //db.collection("Note").get()
-
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
@@ -83,54 +66,55 @@ public class MainActivity2 extends AppCompatActivity implements MyAdapter2.ItemC
                             Log.d("drn", "onSuccess: LIST EMPTY");
                             return;
                         } else {
+                            noteItemArrayList.clear(); // Clear the existing list before adding new items
+
                             for (DocumentSnapshot documentSnapshot : documentSnapshots) {
                                 if (documentSnapshot.exists()) {
                                     String noteId = documentSnapshot.getId();
                                     String noteName = documentSnapshot.getString("noteName");
                                     Note note = new Note(noteId, noteName);
                                     noteItemArrayList.add(note);
-                                    recyclerView.setLayoutManager(layoutManager);
-                                    recyclerView.setHasFixedSize(true);
-                                    recyclerView.setAdapter(myAdapter);
-                                    myAdapter.notifyDataSetChanged();
                                     Log.e("LogDATA", noteItemArrayList.toString());
                                 }
                             }
+
+                            // Notify the adapter that the data has changed
+                            myAdapter.notifyDataSetChanged();
                         }
                     }
-                }).addOnFailureListener(new OnFailureListener() {
+                })
+                .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.e("LogDATA", "get failed with ");
-
-
+                        Log.e("LogDATA", "get failed with " + e.getMessage());
                     }
                 });
     }
 
     @Override
-    public void onItemClick(int position, String id) {
-
+    public void onItemClick(int position) {
+        // Handle item click event
     }
 
     @Override
-    public void onItemClick2(int position, String id) {
+    public void onItemClick2(int position) {
         Note click = noteItemArrayList.get(position);
         String idNote = click.getNoteId();
         Intent intent = new Intent(this, MainActivity3.class);
         intent.putExtra("id", idNote);
-        noteEvent(id, "Note Button", noteItemArrayList.get(position).noteName);
+        noteEvent(idNote, "Note Button", noteItemArrayList.get(position).getNoteName());
         startActivity(intent);
     }
 
-    public void noteEvent(String id, String name, String content){
+    public void noteEvent(String id, String name, String content) {
         Bundle bundle = new Bundle();
         bundle.putString(FirebaseAnalytics.Param.ITEM_ID, id);
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, name);
         bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, content);
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
-    public void screenTrack(String screenName){
+
+    public void screenTrack(String screenName) {
         Bundle bundle = new Bundle();
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, screenName);
         bundle.putString(FirebaseAnalytics.Param.SCREEN_CLASS, "Main Activity");
